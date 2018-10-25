@@ -58,6 +58,7 @@ export const remove = (model, conditions) => {
       } else {
         if (res.result.n != 0) {
           console.log('remove success!')
+          console.log(res)
         } else {
           console.log('remove fail:no this data!')
         }

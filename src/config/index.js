@@ -3,7 +3,7 @@ const auth = {
   admin_secret: 'admin-token',
   tokenKey: 'Token-Auth',
   whiteList: ['login', 'client_api'],
-  blackList: ['admin_api']
+  blackList: ['admin_api', 'admin_auth']
 }
 const log = {
   logLevel: 'debug', // 指定记录的日志级别
@@ -11,7 +11,7 @@ const log = {
   projectName: 'blog', // 项目名，记录在日志中的项目信息
   ip: '0.0.0.0' // 默认情况下服务器 ip 地址
 }
-const port = process.env.NODE_ENV === 'production' ? '80' : '3000'
+const port = process.env.NODE_ENV === 'production' ? '80' : '3001'
 
 export default {
   env: process.env.NODE_ENV,
@@ -19,9 +19,9 @@ export default {
   auth,
   log,
   mongodb: {
-    username: 'root',
-    pwd: 'root',
+    username: 'admin',
+    pwd: '123456',
     address: '127.0.0.1:27017',
-    db: 'budget'
+    db: 'burget'
   }
 }

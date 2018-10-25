@@ -5,7 +5,7 @@ import staticFiles from 'koa-static'
 import Log from './log'
 import Send from './send'
 import Func from './func'
-// import Auth from './auth'
+import Auth from './auth'
 
 export default app => {
   //缓存拦截器
@@ -24,6 +24,7 @@ export default app => {
 
   app.use(Send())
   app.use(Func())
+  app.use(Auth())
 
   //post请求中间件 body转json
   app.use(bodyParser())
