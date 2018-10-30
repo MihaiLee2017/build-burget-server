@@ -1,57 +1,59 @@
 import jwt from 'jsonwebtoken'
 import conf from '../../config'
-import { add } from '../../middleware/func/db'
 import userModel from '../../models/user'
-import { Promise } from 'mongoose'
-import { resolve } from 'url'
 
 const user_controller = {
   sign_in: async (ctx, next) => {
     console.log('---------- 用户登录 ----------------')
     let { name, pwd } = ctx.request.body
-    let token = ctx.cookies.get(conf.auth.tokenKey)
+    // let token = ctx.cookies.get(conf.auth.tokenKey)
+    // try {
+    //   let data = jwt.verify(token, conf.auth.admin_secret)
+    //   console.log('重定向')
+    //   console.log(ctx.request)
+    //   // ctx.redirect('/admin_auth/user/info')
+    //   // ctx.request.url = '/admin_auth/user/info'
+    //   ctx.send({ token: token }, '已登录')
+    // } catch (e) {
     try {
-      let data = jwt.verify(token, conf.auth.admin_secret)
-      console.log('重定向')
-      console.log(ctx.request)
-      ctx.redirect('/admin_auth/user/info')
-    } catch (e) {
-      try {
-        let reg = new RegExp(name, 'i')
-        let data = await ctx.findOne(userModel, { name: name })
-        if (!data) {
-          return ctx.sendError('用户不存在！')
-        }
-        if (data.pwd !== pwd) {
-          return ctx.sendError('密码错误，请重新输入！')
-        }
-        let loginTime = new Date()
-        await ctx.update(
-          userModel,
-          {
-            _id: data._id
-          },
-          {
-            $set: {
-              loginTime: loginTime
-            }
-          }
-        )
-        let payload = {
-          name: data.name,
-          roles: data.roles
-        }
-        let token = jwt.sign(payload, conf.auth.admin_secret, {
-          expiresIn: '1h'
-        })
-        ctx.cookies.set(conf.auth.tokenKey, token, {
-          httpOnly: false // 是否只用于http请求中获取
-        })
-        ctx.send({ info: payload, token: token })
-      } catch (e) {
-        ctx.sendError(e)
+      if (!name) {
+        ctx.sendError('请输入用户名！')
+        return false
       }
+      let data = await ctx.findOne(userModel, { name: name })
+      if (!data) {
+        return ctx.sendError('用户不存在！')
+      }
+      if (data.pwd !== pwd) {
+        return ctx.sendError('密码错误，请重新输入！')
+      }
+      let loginTime = new Date()
+      await ctx.update(
+        userModel,
+        {
+          _id: data._id
+        },
+        {
+          $set: {
+            loginTime: loginTime
+          }
+        }
+      )
+      let payload = {
+        name: data.name,
+        roles: data.roles
+      }
+      let token = jwt.sign(payload, conf.auth.admin_secret, {
+        expiresIn: '1h'
+      })
+      ctx.cookies.set(conf.auth.tokenKey, token, {
+        httpOnly: false // 是否只用于http请求中获取
+      })
+      ctx.send({ info: payload, token: token })
+    } catch (e) {
+      ctx.sendError(e)
     }
+    // }
   },
   info: async (ctx, next) => {
     console.log('---------- 查询用户信息 ----------------')
@@ -112,7 +114,15 @@ const user_controller = {
     }
   },
   update: async (ctx, next) => {
-    ctx.send({ controller: 'user controller' })
+    console.log('---------- 更新用户 ----------------')
+    // ctx.send({ controller: 'user controller' })
+    let params = ctx.request.body
+    try {
+      let data = await ctx.update(userModel, { _id: params._id }, params)
+      ctx.send({}, '修改成功')
+    } catch (e) {
+      ctx.sendError(e)
+    }
   },
   del: async (ctx, next) => {
     console.log('---------- 删除用户 ----------------')

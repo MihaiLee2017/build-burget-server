@@ -3,6 +3,7 @@ import koaRouter from 'koa-router'
 import jwt from 'jsonwebtoken'
 import conf from '../config'
 import user_controller from '../controller/admin/user'
+import record_controller from '../controller/admin/record'
 const router = koaRouter()
 export default app => {
   /**
@@ -12,7 +13,18 @@ export default app => {
   router.get('/admin_auth/user/info', user_controller.info)
   router.get('/admin_auth/user/list', user_controller.list)
   router.post('/admin_auth/user/add', user_controller.add)
+  router.post('/admin_auth/user/update', user_controller.update)
   router.get('/admin_auth/user/del', user_controller.del)
+
+  /**
+   * ******************* admin api *****************************
+   */
+  router.get('/admin_auth/record/list', record_controller.list)
+  // router.get('/admin_auth/record/info', record_controller.info)
+  router.post('/admin_auth/record/add', record_controller.add)
+  router.post('/admin_auth/record/update', record_controller.update)
+  router.get('/admin_auth/record/del', record_controller.del)
+
   /**
    * ******************* test api*******************************
    */
